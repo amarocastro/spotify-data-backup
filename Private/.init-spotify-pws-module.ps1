@@ -1,7 +1,8 @@
 Import-Module .\Private\Get-SpotifyAccessToken.ps1 -Force
 Import-Module .\Private\Get-SpotifyAuthorization.ps1 -Force
+Import-Module .\Private\Refresh-SpotifyAccessToken.ps1 -Force
 
-function Init-Module() {
+function Init-Spotify-Module{
 
     #Populate available variables
     $all_vars = Get-Vars
@@ -18,14 +19,28 @@ function Init-Module() {
         }
         $access_token = $access_token_content.access_token
         $refresh_token = $access_token_content.refresh_token
-        $expire_in = (Get-Date).AddSeconds([int]$access_token_content.expires_in)
+        $expires_in = (Get-Date).AddSeconds([int]$access_token_content.expires_in)
 
-        Set-Vars -authorization_code $authorization_code -access_token $access_token -refresh_token $refresh_token -expire_in $expire_in
-        Save-Vars -authorization_code $authorization_code -access_token $access_token -refresh_token $refresh_token -expire_in $expire_in
+        Set-Vars -authorization_code $authorization_code -access_token $access_token -refresh_token $refresh_token -expires_in $expires_in
+        Save-Vars -authorization_code $authorization_code -access_token $access_token -refresh_token $refresh_token -expires_in $expires_in
+
+        $all_vars = $true
     }
 
     #Update token if expired
-    
+    $time_now = Get-Date
+    if($time_now -gt $SpotifyAccessTokenDateExpires -and $all_vars){
+        $refresh_token_content = Refresh-SpotifyAccessToken -client_id $SpotifyClientId -client_secret $SpotifyClientSecret -refresh_token $SpotifyRefreshToken
+        if(-Not $refresh_token_content){
+            Throw "Could not refresh your token"
+        }
+        $access_token = $refresh_token_content.access_token
+        $expires_in = (Get-Date).AddSeconds([int]$refresh_token_content.expires_in)
+
+        Set-Vars -authorization_code $SpotifyAuthCode -access_token $access_token -refresh_token $SpotifyRefreshToken -expires_in $expires_in
+        Save-Vars -authorization_code $SpotifyAuthCode -access_token $access_token -refresh_token $SpotifyRefreshToken -expires_in $expires_in
+    }
+
 }
 
 function Get-Vars(){
@@ -45,7 +60,7 @@ function Get-Vars(){
         $global:SpotifyAccessToken = $content.access_token
         $global:SpotifyRefreshToken = $content.refresh_token
         ##Convertir en datetime
-        $global:SpotifyAccessTokenDateExpires = $content.expires
+        $global:SpotifyAccessTokenDateExpires = [Datetime]$content.expires_in
         
         $all_vars = $true
     }
@@ -53,7 +68,7 @@ function Get-Vars(){
     return $all_vars
 }
 
-function Set-Vars([string]$authorization_code,[string]$access_token,[string]$refresh_token,[string]$expire_in) {
+function Set-Vars([string]$authorization_code,[string]$access_token,[string]$refresh_token,[string]$expires_in) {
     
     $global:SpotifyAuthCode = $authorization_code
     $global:SpotifyAccessToken = $access_token
@@ -62,7 +77,7 @@ function Set-Vars([string]$authorization_code,[string]$access_token,[string]$ref
 
 }
 
-function Save-Vars([string]$authorization_code,[string]$access_token,[string]$refresh_token,[string]$expire_in){
+function Save-Vars([string]$authorization_code,[string]$access_token,[string]$refresh_token,[string]$expires_in){
 
     $content = @{
         client_id = $SpotifyClientId
@@ -70,8 +85,7 @@ function Save-Vars([string]$authorization_code,[string]$access_token,[string]$re
         authorization_code = $authorization_code
         access_token = $access_token
         refresh_token = $refresh_token
-        #Guardar como datetime
-        expires = $expires_in
+        expires_in = $expires_in
     }
 
     $content | ConvertTo-Json | Set-Content ".\Private\vars.json"

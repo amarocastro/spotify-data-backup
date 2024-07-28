@@ -7,7 +7,7 @@ function Generate-RandomString([int]$length) {
 function Get-SpotifyAuthorization {
 
     $redirect_uri = "http://localhost:8124/callback/"
-    $scope = 'user-read-private user-read-email'
+    $scope = 'user-read-private user-read-email user-library-read user-follow-read'
     $state = Generate-RandomString -length 16
 
     $spotifyAuthUrl = "https://accounts.spotify.com/authorize/"
