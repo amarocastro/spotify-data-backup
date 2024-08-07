@@ -1,5 +1,5 @@
 $directorySeparator = [System.IO.Path]::DirectorySeparatorChar
-$moduleName = $PSScriptRoot.Split($directorySeparator)[-1]
+$moduleName = "Spotify-Module"
 $moduleManifest = $PSScriptRoot + $directorySeparator + $moduleName + '.psd1'
 $publicFunctionsPath = $PSScriptRoot + $directorySeparator + 'Public' + $directorySeparator + 'ps1'
 $privateFunctionsPath = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'ps1'

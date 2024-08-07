@@ -9,6 +9,6 @@ function Save-Vars([string]$settings_path,[string]$authorization_code,[string]$a
         expires_in = $expires_in
     }
 
-    $content | ConvertTo-Json | Set-Content ".\vars.json"
+    $content | ConvertTo-Json | Set-Content "$settings_path\vars.json"
     
 }
