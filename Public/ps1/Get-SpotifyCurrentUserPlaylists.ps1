@@ -1,9 +1,14 @@
 
 function Get-SpotifyCurrentUserPlaylists {
-    
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
+        [Alias("AccesToken")]
+        [string]$access_token
+    )    
     process{
         $header = @{
-            authorization = "Bearer " + $SpotifyAccessToken
+            authorization = "Bearer " + $access_token
         }
         $playlists = @{ next = "https://api.spotify.com/v1/me/playlists?limit=50" }
         & { while($playlists.next -and -Not $e){

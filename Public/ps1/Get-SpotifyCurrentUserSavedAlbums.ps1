@@ -1,8 +1,14 @@
 function Get-SpotifyCurrentUserSavedAlbums {
-
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
+        [Alias("AccesToken")]
+        [string]$access_token
+    )
+    
     process{
         $header = @{
-            authorization = "Bearer " + $SpotifyAccessToken
+            authorization = "Bearer " + $access_token
         }
         $albums = @{ next = "https://api.spotify.com/v1/me/albums?limit=50" }
         & { while($albums.next -and -Not $e){

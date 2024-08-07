@@ -1,8 +1,13 @@
 function Get-SpotifyCurrentUserFollowedArtists {
-
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
+        [Alias("AccesToken")]
+        [string]$access_token
+    )
     process{
         $header = @{
-            authorization = "Bearer " + $SpotifyAccessToken
+            authorization = "Bearer " + $access_token
         }
         $artists = @{ next = "https://api.spotify.com/v1/me/following?type=artist&limit=50" }
         & { while($artists.next -and -Not $e){

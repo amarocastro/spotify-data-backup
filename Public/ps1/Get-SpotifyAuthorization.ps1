@@ -1,17 +1,17 @@
-function Generate-RandomString([int]$length) {
-    
-    $random_string = -join ((65..90) + (97..122) | Get-Random -Count $length | % {[char]$_})
-    return $random_string
-}
-
 function Get-SpotifyAuthorization {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
+        [Alias("ClientId")]
+        [string]$client_id
+    )
 
     $redirect_uri = "http://localhost:8124/callback/"
     $scope = 'user-read-private user-read-email user-library-read user-follow-read'
-    $state = Generate-RandomString -length 16
+    $state = -join ((65..90) + (97..122) | Get-Random -Count 16 | % {[char]$_})
 
     $spotifyAuthUrl = "https://accounts.spotify.com/authorize/"
-    $spotifyAuthUrl += "?client_id=$SpotifyClientId"
+    $spotifyAuthUrl += "?client_id=$client_id"
     $spotifyAuthUrl += "&response_type=code"
     $spotifyAuthUrl += "&redirect_uri=$([System.Uri]::EscapeDataString($redirect_uri))"
     # $spotifyAuthUrl += "&redirect_uri=$redirect_uri"
