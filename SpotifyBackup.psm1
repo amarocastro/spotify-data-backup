@@ -2,18 +2,14 @@ $directorySeparator = [System.IO.Path]::DirectorySeparatorChar
 $moduleName = $PSScriptRoot.Split($directorySeparator)[-1]
 $moduleManifest = $PSScriptRoot + $directorySeparator + $moduleName + '.psd1'
 $publicFunctionsPath = $PSScriptRoot + $directorySeparator + 'Public' + $directorySeparator + 'ps1'
-# $privateFunctionsPath = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'ps1'
 $currentManifest = Test-ModuleManifest $moduleManifest
 
 $aliases = @()
 $publicFunctions = Get-ChildItem -Path $publicFunctionsPath | Where-Object {$_.Extension -eq '.ps1'}
-# $privateFunctions = Get-ChildItem -Path $privateFunctionsPath | Where-Object {$_.Extension -eq '.ps1'}
 $publicFunctions | ForEach-Object { . $_.FullName }
-# $privateFunctions | ForEach-Object { . $_.FullName }
 
-$publicFunctions | ForEach-Object { # Export all of the public functions from this module
-
-    # The command has already been sourced in above. Query any defined aliases.
+$publicFunctions | ForEach-Object { 
+    
     $alias = Get-Alias -Definition $_.BaseName -ErrorAction SilentlyContinue
     if ($alias) {
         $aliases += $alias

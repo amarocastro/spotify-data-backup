@@ -2,7 +2,7 @@ function Get-SpotifyCurrentUserFollowedArtists {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName,Position=0)]
-        [Alias("AccesToken")]
+        [Alias("AccessToken")]
         [string]$access_token
     )
     process{

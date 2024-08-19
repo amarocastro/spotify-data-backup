@@ -17,7 +17,7 @@ function Get-SpotifyPlaylistTracks{
         & { while($tracks.next -and -Not $e){
                 $tracks = Invoke-RestMethod -Uri $tracks.next -Method GET -Headers $header -ContentType "application/json" -ErrorVariable "e"; $tracks
             }
-        } | Select-Object -ExpandProperty items | Select-Object -ExpandProperty track -Property * -ExcludeProperty is_local,track
+        } | Select-Object -ExpandProperty items | Select-Object -ExpandProperty track -Property * -ExcludeProperty is_local,track,video_thumbnail
 
     }
 }
